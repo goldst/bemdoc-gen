@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockdoc [block name] Documentation</title>
+</head>
+<body>
+    <style>
+        body {
+            margin: 8px;
+            font: sans-serif;
+        }
+        p, h1, h2 {
+            margin: 0;
+        }
+        .title, .block-variants-title {
+            margin-left: 8px;
+            grid-area: title;
+        }
+        .sidebar {
+            background-color: gray;
+            padding: 8px;
+            margin-bottom: 8px;
+            grid-area: sidebar;
+        }
+        .filters__group {
+            margin-left: 16px;
+        }
+        .block-variant {
+            background-color: darkgrey; 
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+        .block-variant__preview {
+            background-color: white;
+            height: 75vw;
+            grid-area: preview;
+        }
+        .block-variant__description {
+            grid-area: description;
+        }
+        .block-variant__form>textarea {
+            grid-area: markup;
+        }
+        .block-variant__description,
+        .block-variant__form>textarea,
+        .block-variant__preview {
+            width: 100%;
+            border: none;
+            margin-bottom: 8px;
+        }
+        footer {
+            grid-area: footer;
+        }
+        @media screen and (min-width: 800px) {
+            body {
+                display: grid;
+                grid-template-columns: 360px auto;
+                grid-template-rows: auto 1fr auto;
+                grid-template-areas:
+                    "sidebar title"
+                    "sidebar main"
+                    "footer footer";
+                grid-column-gap: 8px;
+            }
+            .block-variant__preview {
+                height: 30vh;
+            }
+        }
+        @media screen and (min-width: 1120px) {
+            .block-variant {
+                display: grid;
+                grid-template-rows: auto 1fr;
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "description preview"
+                    "markup preview";
+                grid-column-gap: 8px;
+            }
+            .block-variant__form>textarea {
+                height: 100%;
+            }
+            .block-variant__preview {
+                height: 100%;
+            }
+        }
+    </style>
+    <h1 class="title">Blockdoc [block name] Documentation</h1>
+    <nav class="sidebar">
+        <div class="filters">
+            <h2 class="filters__title">Filters</h2>
+            <form action="" class="filters__form">
+                <div>
+                    <div><input type="radio" name="filters__major-option" checked>all</div>
+                    <div><input type="radio" name="filters__major-option">containing at least:</div>
+                </div>
+
+                <div class="filters__group">
+                    <div><input type="checkbox" name="checkbox--1">Filter 1</div>
+                    <div class="filters__group">
+                        <div><input type="checkbox" name="checkbox--2">Filter 2</div>
+                        <div><input type="checkbox" name="checkbox--3">Filter 3</div>
+                        <div class="filters__group">
+                            <div><input type="checkbox" name="checkbox--4">Filter 4</div>
+                        </div>
+                        <div><input type="checkbox" name="checkbox--5">Filter 5</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="variables">
+            <h2 class="variables__title">Variables</h2>
+            <form action="" class="variables__form">
+                <div>--var1<input type="text"><input type="button" value="R"></div>
+                <div>--var2<input type="text"><input type="button" value="R"></div>
+                <div>--var3<input type="text"><input type="button" value="R"></div>
+                <div>--var4<input type="text"><input type="button" value="R"></div>
+            </form>
+        </div>
+    </nav>
+    <main>
+        <h2 class="block-variants-title">Available block variants</h2>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+        <div class="block-variant">
+            <div class="block-variant__description">
+                <p>[description]</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form">
+                <textarea name="" id="" cols="30" rows="10" class="block-variant__markup">[html markup]</textarea>
+            </form>
+            <iframe src="" frameborder="0" class="block-variant__preview"></iframe>
+        </div>
+    </main>
+    <footer>
+        <p>Generated with <a href="https://github.com/goldst/blockdoc-generator">blockdoc-generator</a>, the dynamic documentation generator for BEM-based stylesheets by <a href="https://gldstn.dev">Leonard Goldstein</a></p>
+    </footer>
+</body>
+</html>

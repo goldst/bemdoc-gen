@@ -1,0 +1,24 @@
+{
+  "name": "bemdoc-gen",
+  "version": "0.1.0",
+  "description": "generates interactive documentation for block-based CSS libraries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goldst/bemdoc-gen.git"
+  },
+  "keywords": [
+    "css",
+    "bem",
+    "documentation"
+  ],
+  "author": "Leonard Goldstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/goldst/bemdoc-gen/issues"
+  },
+  "homepage": "https://github.com/goldst/bemdoc-gen#readme"
+}

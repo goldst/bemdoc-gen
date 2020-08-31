@@ -1,0 +1,168 @@
+/**
+ * a standard button
+ * @tree
+ *   .button: a, button, input[type=button]
+ *     [button text]
+ */
+ .button {
+    /**
+     * @variable {length} [--w=500px] base width of a standard card,
+     *   influences size of element if element's <code>width</code> isn't
+     *   overwritten
+     */
+    --_w: var(--w, 500px);
+
+    /**
+     * @variable {length} [--h=calc(var(--w, 500px) * 0.618033988)] base
+     *   height of a standard card, influences size of element if
+     *   element's <code>height</code> isn't overwritten
+     */
+    --_h: var(--h, calc(var(--w, 500px) * 0.618033988));
+
+    /**
+     * @variable {color} [--c0=black] block background color
+     */
+    --_c0: var(--c0, black);
+
+    /**
+     * @variable {color} [--c1=lightgrey] block foreground color
+     */
+    --_c1: var(--c1, lightgrey);
+
+    /**
+     * @variable {image} [--button--background=
+     *   linear-gradient(black, black)] Icon of the button. Currently only
+     *   works with the <code>.button--s</code> modifier.
+     * @requires button-s on button
+     */
+    --_button--background:
+        var(
+            --button--background,
+            linear-gradient(black, black)
+        );
+
+    background: var(--_c0);
+    border: none;
+    box-sizing: content-box;
+    color: var(--_c1);
+    cursor: inherit;
+    display: inline-block;
+    font-family: "Manrope", Arial, Verdana, Tahoma, sans-serif;
+    font-size: inherit;
+    height: calc(0.12 * var(--_w));
+    line-height: calc(0.12 * var(--_w));
+    padding: 0 calc(0.01 * var(--_w));
+    text-align: center;
+    text-decoration: none;
+    transition:
+        box-shadow 0.5s,
+        transform 0.5s;
+}
+
+.button:hover,
+.button:focus {
+    --a:
+        calc(
+            var(--button--mouse-shadow-left) - (0.5 * var(--button--width))
+        );
+
+    background-image:
+        var(--_add-background),
+        radial-gradient(
+            ellipse at
+            calc(
+                var(--button--mouse-shadow-left, -10000) * 1px
+                / var(--_hover-scale)
+            )
+            bottom,
+            var(--_c1) 0,
+            transparent calc(0.12 * var(--_w))
+        ),
+        radial-gradient(
+            ellipse at
+            calc(
+                var(--button--mouse-shadow-left, -10000) * 1px
+                / var(--_hover-scale)
+            )
+            top,
+            var(--_c1) 0,
+            transparent calc(0.12 * var(--_w))
+        ),
+        radial-gradient(
+            circle at
+            calc(
+                calc(var(--button--mouse-shadow-left, -10000) * 1px)
+                / var(--_hover-scale)
+            )
+            center,
+            var(--_c1) 0,
+            transparent
+            calc(var(--a) * var(--a) * 0.007px + 0.1 * var(--_w))
+        );
+    box-shadow: 0 0 calc(0.015 * var(--_w)) 0 var(--_c0);
+    outline: none;
+    transform: scale(1.05);
+}
+
+/**
+ * Small square version of the button. Only shows icon
+ *   by default, extends <code>width</code> and shows text on
+ *   <code>:hover</code>.
+ * @tree .button.button--s: a, button, input[type=button]
+ *   [button text]
+ */
+.button--s {
+    --collapsed: 15px;
+
+    height: var(--collapsed);
+    line-height: normal;
+    -webkit-mask:
+        linear-gradient(black, black),
+        var(--_button--background) no-repeat
+        calc(0.01 * var(--_w)) calc(0.01 * var(--_w)) / 15px 15px;
+    mask:
+        linear-gradient(black, black),
+        var(--_button--background) no-repeat
+        calc(0.01 * var(--_w)) calc(0.01 * var(--_w)) / 15px 15px;
+    -webkit-mask-composite: xor;
+    mask-composite: subtract;
+
+    /* transition using max-width because width:auto is not animated */
+    max-width: 0;
+    overflow: hidden;
+    padding:
+        calc(0.01 * var(--_w))
+        0
+        calc(0.01 * var(--_w))
+        calc(var(--collapsed) + 0.02 * var(--_w));
+    transition:
+        box-shadow 0.5s,
+        padding-right 0.5s,
+        transform 0.5s,
+        max-width 0.5s;
+    white-space: nowrap;
+}
+
+.button--s:hover,
+.button--s:focus {
+    background-image:
+        var(--_add-background),
+        radial-gradient(
+            circle at
+            calc(
+                var(--button--mouse-shadow-left, -100%) * 1px
+                / var(--_hover-scale)
+            )
+            calc(
+                var(--button--mouse-shadow-top, -100%) * 1px /
+                var(--_hover-scale)
+            ),
+            var(--_c1) 0,
+            transparent calc(0.1 * var(--_w))
+        );
+    box-shadow: 0 0 calc(0.025 * var(--_w)) 0 var(--_c0);
+    max-width: var(--_w);
+    outline: none;
+    padding-right: calc(0.01 * var(--_w));
+    transform: scale(1.1);
+}

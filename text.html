@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bemdoc card.css Documentation</title>
+</head>
+
+<body>
+    <style>
+        body {margin: 8px;font-family: sans-serif;}p, h1, h2 {margin: 0;}.title, .block-variants-title {margin-left: 8px;grid-area: title;}.sidebar {border: 2px solid gray;border-radius: 8px;padding: 8px;margin-bottom: 8px;grid-area: sidebar;}button, input[type=button], input[type=text] {border: 2px solid gray;border-radius: 8px;padding: 0;min-width: 32px;height: 32px;background-color: gray;margin: 0 0 8px 8px;box-sizing: border-box;}input[type=text] {background-color: white;}.filters__group {margin-left: 16px;}.variables__row {display: flex;align-items: baseline;}.variables__input {flex-grow: 1;}.block-variant {border-radius: 8px;background-color: gray;padding: 8px;margin-bottom: 8px;}.block-variant__preview {background-color: white;height: 75vw;grid-area: preview;}.block-variant__description {grid-area: description;}.block-variant__form>textarea {grid-area: markup;}.block-variant__description,.block-variant__form>textarea,.block-variant__preview {width: 100%;margin-bottom: 8px;border: none;}footer {grid-area: footer;}@media screen and (min-width: 800px) {body {display: grid;grid-template-columns: 360px auto;grid-template-rows: auto 1fr auto;grid-template-areas:"sidebar title""sidebar main""footer footer";grid-column-gap: 8px;}.block-variant__preview {height: 30vh;}}@media screen and (min-width: 1120px) {.block-variant {display: grid;grid-template-rows: auto 1fr;grid-template-columns: 1fr 1fr;grid-template-areas:"description preview""markup preview";grid-column-gap: 8px;}.block-variant__form>textarea {height: 100%;}.block-variant__preview {height: 100%;}}
+    </style>
+    <h1 class="title">bemdoc card.css Documentation</h1>
+    <nav class="sidebar">
+        <div class="filters">
+            <h2 class="filters__title">Filters</h2>
+            <form action="" class="filters__form">
+                <div>
+                    <div><input type="radio" name="filters__major-option" checked>all</div>
+                    <div><input type="radio" name="filters__major-option">containing at least:</div>
+                </div>
+                <div class="filters__group">
+                    <div><input type="checkbox" name="checkbox--_-_card" onchange="checkbox_-_cardChange(e)">.card</div>
+                    <div class="filters__group">
+                        <div><input type="checkbox" name="checkbox--_-_card__button" onchange="checkbox_-_card__buttonChange(e)">.card__button</div>
+                        <div class="filters__group"></div>
+                        <style id="disable-style--_-_card__button">
+                            .block-variant--_-_card__button{display:none}
+                        </style>
+                        <script type="text/javascript">
+                            function checkbox_-_card__buttonChange(e) {console.log(e);}
+                        </script>
+                    </div>
+                    <style id="disable-style--_-_card">
+                        .block-variant--_-_card{display:none}
+                    </style>
+                    <script type="text/javascript">
+                        function checkbox_-_cardChange(e) {console.log(e);}
+                    </script>
+                    <div><input type="checkbox" name="checkbox--_-_shard" onchange="checkbox_-_shardChange(e)">.shard</div>
+                    <div class="filters__group"></div>
+                    <style id="disable-style--_-_shard">
+                        .block-variant--_-_shard{display:none}
+                    </style>
+                    <script type="text/javascript">
+                        function checkbox_-_shardChange(e) {console.log(e);}
+                    </script>
+                </div>
+            </form>
+        </div>
+        <div class="variables">
+            <h2 class="variables__title">Variables</h2>
+            <form action="" class="variables__form">
+                <div class="variables__row">--var1<input type="text" class="variables__input"><input type="button" value="R"></div>
+                <div class="variables__row">--var2<input type="text" class="variables__input"><input type="button" value="R"></div>
+                <div class="variables__row">--var3<input type="text" class="variables__input"><input type="button" value="R"></div>
+                <div class="variables__row">--var4<input type="text" class="variables__input"><input type="button" value="R"></div>
+            </form>
+        </div>
+    </nav>
+    <main>
+        <h2 class="block-variants-title">Available block variants</h2>
+        <div class="block-variant block-variant--_-_card">
+            <div class="block-variant__description">
+                <p>a default card</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form"><textarea name="" id="block-variant__markup--0" class="block-variant__markup" onkeyup="loadMarkup0()" cols="30" rows="10"><main class=" card"></main></textarea></form><iframe src="about:blank" frameborder="0" id="block-variant__preview--0" class="block-variant__preview" onload="loadMarkup0()"></iframe></div>
+        <script type="text/javascript">
+            function loadMarkup0() {const markup = document.getElementById('block-variant__markup--0').value;const iframe = document.getElementById('block-variant__preview--0');iframe.contentWindow.document.open();iframe.contentWindow.document.write('<head><link rel="stylesheet" type="text/css" href="card.css"></head>' +'<body>' + markup + '</body>');iframe.contentWindow.document.close();}//document.getElementById('block-variant__markup--0').addEventListener('change', loadMarkup0);//loadMarkup();
+        </script>
+        <div class="block-variant block-variant--_-_shard">
+            <div class="block-variant__description">
+                <p>a default card</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form"><textarea name="" id="block-variant__markup--1" class="block-variant__markup" onkeyup="loadMarkup1()" cols="30" rows="10"><main class=" shard"></main></textarea></form><iframe src="about:blank" frameborder="0" id="block-variant__preview--1" class="block-variant__preview" onload="loadMarkup1()"></iframe></div>
+        <script type="text/javascript">
+            function loadMarkup1() {const markup = document.getElementById('block-variant__markup--1').value;const iframe = document.getElementById('block-variant__preview--1');iframe.contentWindow.document.open();iframe.contentWindow.document.write('<head><link rel="stylesheet" type="text/css" href="card.css"></head>' +'<body>' + markup + '</body>');iframe.contentWindow.document.close();}//document.getElementById('block-variant__markup--1').addEventListener('change', loadMarkup1);//loadMarkup();
+        </script>
+        <div class="block-variant block-variant--_-_card block-variant--_-_card__button">
+            <div class="block-variant__description">
+                <p>with a button</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form"><textarea name="" id="block-variant__markup--2" class="block-variant__markup" onkeyup="loadMarkup2()" cols="30" rows="10"><div class=" card"><button class=" card__button"></button></div></textarea></form><iframe src="about:blank" frameborder="0" id="block-variant__preview--2" class="block-variant__preview" onload="loadMarkup2()"></iframe></div>
+        <script type="text/javascript">
+            function loadMarkup2() {const markup = document.getElementById('block-variant__markup--2').value;const iframe = document.getElementById('block-variant__preview--2');iframe.contentWindow.document.open();iframe.contentWindow.document.write('<head><link rel="stylesheet" type="text/css" href="card.css"></head>' +'<body>' + markup + '</body>');iframe.contentWindow.document.close();}//document.getElementById('block-variant__markup--2').addEventListener('change', loadMarkup2);//loadMarkup();
+        </script>
+        <div class="block-variant block-variant--_-_shard block-variant--_-_card__button">
+            <div class="block-variant__description">
+                <p>with a button</p>
+                <p>[dependencies]</p>
+            </div>
+            <form action="" class="block-variant__form"><textarea name="" id="block-variant__markup--3" class="block-variant__markup" onkeyup="loadMarkup3()" cols="30" rows="10"><div class=" shard"><button class=" card__button"></button></div></textarea></form><iframe src="about:blank" frameborder="0" id="block-variant__preview--3" class="block-variant__preview" onload="loadMarkup3()"></iframe></div>
+        <script type="text/javascript">
+            function loadMarkup3() {const markup = document.getElementById('block-variant__markup--3').value;const iframe = document.getElementById('block-variant__preview--3');iframe.contentWindow.document.open();iframe.contentWindow.document.write('<head><link rel="stylesheet" type="text/css" href="card.css"></head>' +'<body>' + markup + '</body>');iframe.contentWindow.document.close();}//document.getElementById('block-variant__markup--3').addEventListener('change', loadMarkup3);//loadMarkup();
+        </script>
+    </main>
+    <footer>
+        <p>Generated with <a href="https://github.com/goldst/bemdoc-generator">bemdoc-generator</a>, the dynamic documentation generator for BEM-based stylesheets by <a href="https://gldstn.dev">Leonard Goldstein</a></p>
+    </footer>
+</body>
+
+</html>
