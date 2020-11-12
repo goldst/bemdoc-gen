@@ -1,9 +1,12 @@
+#!/usr/bin/env node
+"use strict";
+
 const fs = require('fs');
 const path = require('path');
-const package = require('./package.json');
+const pkg = require('./package.json');
 
 class Tree {
-    constructor(root, description, dependencies = []) {
+    constructor(root, description, dependencies = new DependencyArray()) {
         this.root = root;
         this.description = description;
         this.dependencies = dependencies;
@@ -23,10 +26,26 @@ class Tree {
             this.description + ' ' + addTree.description
         );
     }
+
+    * getFiltersDeep() {
+        yield* this.root.getFiltersDeep();
+    }
+}
+
+class TreeArray extends Array {
+    constructor(...args) {
+        super(...args);
+    }
+
+    * getFiltersDeep() {
+        for(const tree of this) {
+            yield* tree.getFiltersDeep();
+        }
+    }
 }
 
 class TreeNode {
-    constructor(names = '', children = [], types = []) {
+    constructor(names = [], children = new TreeNodeArray(), types = []) {
         this.names = names;
         this.types = types;
         this.children = children;
@@ -75,15 +94,112 @@ class TreeNode {
             this.children.map(child => child.html).join('') +
             `</${this.type}>`;
     }
+
+    * getFiltersDeep() {
+        if(this.type !== 'text') {
+            for(const name of this.names) {
+                yield* name.split(/\./gm).filter(n => n);
+            }
+        }
+        yield* this.children.getFiltersDeep();
+    }
+}
+
+class TreeNodeArray extends Array {
+    constructor(...args) {
+        super(...args);
+    }
+
+    get htmlCheckboxes() {
+        return '<div class="filters__group">\n' +
+        this.map((filter, i) => {
+            const name = filter.names.join('');
+            const f = name.replace(/[\.\(\)]/gm, '_-_');
+            return (
+                `<div><input type="checkbox" name="checkbox--${f}" onchange="checkbox${i}Change(event)" checked>${name}</div>\n` +
+                filter.children.htmlCheckboxes +
+                `<style id="disable-style--${f}" media="max-width: 1px">.block-variant--${f}{display:none}</style>` +
+                `<script type="text/javascript">function checkbox${i}Change(e) {
+                    const style = document.getElementById('disable-style--${f}');
+                    if(e.target.checked) {
+                        style.setAttribute('media', 'max-width: 1px');
+                    } else if(style.hasAttribute('media')){
+                        style.removeAttribute('media');
+                    }
+                }</script>`
+            );
+        }).join('') +
+        '</div>\n';
+    }
+
+    * getFiltersDeep() {
+        for(const tree of this) {
+            yield* tree.getFiltersDeep();
+        }
+    }
+
+    insertClassNode(node, irrelevantNameLength = 0) {
+        if(node.names.length < irrelevantNameLength) {
+            return;
+        }
+
+        const newChildName = node.names
+            .slice(0, irrelevantNameLength+1);
+        const newChildNameJ = newChildName.join('');
+
+        for(let i = 0; i<=this.length; i++) {
+            const childName = this[i] ? this[i].names.join('') : '';
+
+            if(newChildName.length < node.names.length) {
+                const newNode = new ClassNode(newChildName);
+
+                if(i===this.length) {
+                    this.push(newNode);
+                    newNode.insertClassNode(node);
+                } if(childName === newChildNameJ) {
+                    this[i].insertClassNode(node);
+                } else if(childName > newChildNameJ) {
+                    this.splice(0, 0, newNode);
+                    newNode.insertClassNode(node);
+                } else {
+                    continue;
+                }
+            } else {
+                if(i===this.length) {
+                    this.push(node);
+                } else if(childName === newChildNameJ) {
+                    this[i] = node; //overwriting, but nodes should be the same anyway
+                } else if(childName > newChildNameJ) {
+                    this.splice(0, 0, node);
+                } else {
+                    continue;
+                }
+            }
+
+            return;
+        }
+    }
 }
 
 class TextNode extends TreeNode {
     constructor(text) {
-        super([text], [], ['text']);
+        super([text], new TreeNodeArray(), ['text']);
     }
 
     get html() {
         return this.name;
+    }
+}
+
+class ClassNode extends TreeNode {
+    constructor(nameArray = []) {
+        super(nameArray, new TreeNodeArray(), ['class']);
+    }
+
+    insertClassNode(node) {
+        if(node.names.length > this.names.length) {
+            this.children.insertClassNode(node, this.names.length+1);
+        }
     }
 }
 
@@ -141,13 +257,13 @@ function* getComments(fileContent) {
 
 function* allCombinations(arrarr) {
     if(arrarr.length === 0) {
-        yield [];
+        yield new TreeNodeArray();
     } else {
         for(const fstelem of arrarr[0]) {
             const restarr = allCombinations(arrarr.slice(1));
 
             for(const restelems of restarr) {
-                yield [fstelem, ...restelems];
+                yield TreeNodeArray.from([fstelem, ...restelems]);
             }
         }
     }
@@ -156,10 +272,10 @@ function* allCombinations(arrarr) {
 function* getTreeNodesFromOrNode(orNode) {
     for(const name of orNode.names) {
         if(orNode.type !== 'text') {
-            const possibleChildren = Array.from(allCombinations(
+            const possibleChildren = allCombinations(
                 orNode.children
                     .map(getTreeNodesFromOrNode)
-            ));
+            );
 
             for(const children of possibleChildren) {
                 const newTreeNode = new TreeNode([name], children);
@@ -196,7 +312,7 @@ function getOrNode(treeComment) {
     
         orNode = new TreeNode(
             names.split(',').map(name => name.trim()),
-            [],
+            new TreeNodeArray(),
             types ? types.split(',').map(type => type.trim()) : []
         );
     }
@@ -206,17 +322,17 @@ function getOrNode(treeComment) {
 
         const childWhiteSpace = treeComment[0].search(/\S/);
 
-        orNode.children = treeComment
-            .join('')
-            .split(new RegExp(`(?<=^)(?=\\s{${childWhiteSpace}}\\S)`, 'gm'))
-            .map(childComment =>
-                childComment
-                    .split(/(?<=^)/gm)
-                    .map(line => line.slice(childWhiteSpace))
-            )
-            .map(getOrNode);
-    } else {
-        orNode.children = [];
+        orNode.children = TreeNodeArray.from(
+            treeComment
+                .join('')
+                .split(new RegExp(`(?<=^)(?=\\s{${childWhiteSpace}}\\S)`, 'gm'))
+                .map(childComment =>
+                    childComment
+                        .split(/(?<=^)/gm)
+                        .map(line => line.slice(childWhiteSpace))
+                )
+                .map(getOrNode)
+        );
     }
 
     return orNode;
@@ -238,8 +354,58 @@ class Variable {
     }
 }
 
-function getOrTreeAndRelevantObjects(comment) {
-    let root, description, variables=[], dependencies=[];
+class Dependency {
+    constructor(path) {
+        this.path = path.trim();
+        this.type = this.path.endsWith('.css') ?
+            'css' : 'js';
+    }
+
+    get html() {
+        if(this.type === 'css') {
+            return `<link rel="stylesheet" type="text/css" href="${this.path}">`;
+        } else {
+            return `<script type="text/javascript" src="${this.path}"></script>`;
+        }
+    }
+}
+
+class DependencyArray extends Array {
+    constructor(...args) {
+        super(...args);
+    }
+
+    get html() {
+        return this.map(d => d.html).join('\n');
+    }
+}
+
+class VariableArray extends Array {
+    constructor(...args) {
+        super(...args);
+    }
+
+    get html() {
+        return (this
+            .map((v, i) => `
+                <p>${v.description}. Type: <code>${v.type}</code></p><div class="variables__row"><code id="variables_name--${i}">${v.name}</code><input type="text" class="variables__input" id="variables__input--${i}" onkeyup="loadMarkups()" placeholder="${v.default}"><input type="button" value="R" onclick="document.getElementById('variables__input--${i}').value=''; loadMarkups()"></div>`.trim())
+            .join(''));
+    }
+}
+
+function printFileNameMaybe(fileName, doIt = true) {
+    if(doIt) {
+        if(fileName) {
+            console.info(`In ${fileName}:`);
+        } else {
+            console.info('in unspecified file:');
+        }
+    }
+}
+
+function getOrTreeAndRelevantObjects(comment, fileName, fileNames = [], imported = false) {
+    let root, description, variables = new VariableArray(), dependencies = new DependencyArray();
+    let printFileName = true;
 
     for(const section of comment) {
         if(section[0].match(/^@tree\s/gm)) {
@@ -249,10 +415,35 @@ function getOrTreeAndRelevantObjects(comment) {
             section[0] = section[0].slice(10);
             variables.push(new Variable(section.map(l => l.trim()).join(' ')));
         } else if(section[0].match(/^@extends\s/gm)) {
-            console.warn('the current css file is an extension to another one. The bemdoc will most likely not work correctly for this file, consider generating for the file that is extended');
+            if(!imported) {
+                const extending = section[0].slice(8).trim();
+                if(fileNames.includes(extending)) {
+                    // file will be handled at a different point in time
+                    return {
+                        tree: new TreeNode(),
+                        variables: new VariableArray(),
+                        dependencies: new DependencyArray()
+                    };
+                } else {
+                    printFileNameMaybe(fileName, printFileName);
+                    printFileName = false;
+        
+                    console.warn(extending);
+                    console.warn(fileNames);
+                    console.warn(`  the selected css file is an extension to ${extending}, ${extending} is not in the list of files. The bemdoc will most likely not work correctly for this file, consider generating for the file that is extended`);
+                }
+            }
         } else if(section[0].match(/^@requires\s/gm)) {
-            dependencies.push(section[0].slice(10));
+            dependencies.push(new Dependency(section[0].slice(10)));
+        } else if(section[0].match(/^@todo\s/gm)) {
+            printFileNameMaybe(fileName, printFileName);
+            printFileName = false;
+
+            console.info('  @todo ' + section[0].slice(6).trim());
         } else if(section[0].match(/^@/gm)) {
+            printFileNameMaybe(fileName, printFileName);
+            printFileName = false;
+
             console.warn('unknown section type ' + section[0].split(/\s/gm)[0]);
         } else {
             description = section
@@ -263,10 +454,13 @@ function getOrTreeAndRelevantObjects(comment) {
     }
 
     if(!root) {
-        root = new TreeNode([], []);
+        root = new TreeNode();
 
         if(!variables.length) {
-            console.warn('could not find any useful content in comment');
+            printFileNameMaybe(fileName, printFileName);
+            printFileName = false;
+
+            console.warn('  could not find any useful content in comment');
         }
     }
 
@@ -280,8 +474,8 @@ function getOrTreeAndRelevantObjects(comment) {
     };
 }
 
-function getTreesAndRelevantObjects(comment) {
-    const objects = getOrTreeAndRelevantObjects(comment);
+function getTreesAndRelevantObjects(comment, fileName, fileNames = [], imported = false) {
+    const objects = getOrTreeAndRelevantObjects(comment, fileName, fileNames, imported = false);
     return {
         trees: Array.from(getTreesFromOrTree(objects.tree)),
         variables: objects.variables,
@@ -305,76 +499,27 @@ function generateCombinationTrees(trees) {
     return trees;
 }
 
-function* getFiltersFromNode(node) {
-    yield node.name;
-    for(child of node.children) {
-        if(node.type !== 'text') {
-            yield* getFiltersFromNode(child);
-        }
-    }
-}
-
-function* getFiltersFromTrees(trees) {
-    for(tree of trees) {
-        yield* getFiltersFromNode(tree.root);
-    }
-}
-
 function structureFilterNodes(filterNodes) {
-    for(let i = 0; i < filterNodes.length; i++) {
-        const firstFilterNode = filterNodes.shift();
+    const outNodes = new TreeNodeArray();
+    filterNodes.forEach(node => outNodes.insertClassNode(node));
 
-        const isChild = filterNodes.some(filterNode => {
-            if(firstFilterNode.name.startsWith(filterNode.name)) {
-                filterNode.children.push(firstFilterNode);
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-        if(!isChild) {
-            filterNodes.push(firstFilterNode);
-        }
-    }
-
-    return filterNodes.map(filterNode => {
-        filterNode.children = structureFilterNodes(filterNode.children);
-        return filterNode;
-    });
+    return outNodes;
 }
 
 function structureFilters(filters) {
     return structureFilterNodes(
-        filters.map(filter => new TreeNode([filter]))
+        TreeNodeArray.from(filters.map(filter => new ClassNode(
+            filter
+                .split(/(--)|(__)/g)
+                .filter(f => f)
+        )))
     );
 }
 
-function filterCheckboxesFromStructuredFilters(filters) {
-    return '<div class="filters__group">\n' +
-        filters.map((filter, i) => {
-            const f = filter.name.replace(/[\.\(\)]/gm, '_-_');
-            return (
-                `<div><input type="checkbox" name="checkbox--${f}" onchange="checkbox${i}Change(event)" checked>${filter.name}</div>\n` +
-                filterCheckboxesFromStructuredFilters(filter.children) +
-                `<style id="disable-style--${f}" media="max-width: 1px">.block-variant--${f}{display:none}</style>` +
-                `<script type="text/javascript">function checkbox${i}Change(e) {
-                    const style = document.getElementById('disable-style--${f}');
-                    if(e.target.checked) {
-                        style.setAttribute('media', 'max-width: 1px');
-                    } else if(style.hasAttribute('media')){
-                        style.removeAttribute('media');
-                    }
-                }</script>`
-            );
-        }).join('') +
-        '</div>\n';
-}
-
 function* treesToHTMLArray(trees, fileName) {
-    for(tree in trees) {
+    for(const tree in trees) {
         const filters = 
-            Array.from(getFiltersFromNode(trees[tree].root))
+            Array.from(trees[tree].root.getFiltersDeep())
                 .map(filter => 
                     'block-variant--' + 
                     filter.replace(/\./gm, '_-_'))
@@ -386,7 +531,7 @@ function* treesToHTMLArray(trees, fileName) {
             </div>
             <form action="" class="block-variant__form block-variant__form--dependencies">
                 <p>Dependencies:</p>
-                <textarea name="" id="block-variant__dependencies--${tree}" class="block-variant__dependencies" onkeyup="loadMarkup${tree}()" cols="30">${trees[tree].dependencies.map(d => `<link rel="stylesheet" type="text/css" href="${d}">`).join('\n')}</textarea>
+                <textarea name="" id="block-variant__dependencies--${tree}" class="block-variant__dependencies" onkeyup="loadMarkup${tree}()" cols="30">${trees[tree].dependencies.html}</textarea>
             </form>
             <form action="" class="block-variant__form block-variant__form--markup">
                 <p>Markup:</p>
@@ -510,6 +655,7 @@ function buildPage(fileName, filterMarkup, variableMarkup, blockMarkups) {
             .block-variant__form>textarea {
                 margin: 0;
                 resize: vertical;
+                padding: 0;
             }
             footer {
                 grid-area: footer;
@@ -549,8 +695,8 @@ function buildPage(fileName, filterMarkup, variableMarkup, blockMarkups) {
                 <form action="" class="filters__form">
                     <div>
                         <div><input type="radio" name="filters__major-option" checked>all</div>
-                        <div><input type="radio" name="filters__major-option">containing at least one of:</div>
-                        <div><input type="radio" name="filters__major-option">containing none but:</div>
+                        <div><input type="radio" name="filters__major-option">containing at least:</div>
+                        <div><input type="radio" name="filters__major-option">containing only:</div>
                     </div>
                     ${filterMarkup}
                 </form>
@@ -560,8 +706,8 @@ function buildPage(fileName, filterMarkup, variableMarkup, blockMarkups) {
                 <form action="" class="filters__form">
                     <div>
                         <div><input type="radio" name="filters__major-option" checked>all</div>
-                        <div><input type="radio" name="filters__major-option">containing at least one of:</div>
-                        <div><input type="radio" name="filters__major-option">containing none but:</div>
+                        <div><input type="radio" name="filters__major-option">containing at least:</div>
+                        <div><input type="radio" name="filters__major-option">containing only:</div>
                     </div>
                     [TODO]
                 </form>
@@ -592,17 +738,10 @@ function buildPage(fileName, filterMarkup, variableMarkup, blockMarkups) {
             </script>
         </main>
         <footer>
-            <p>Generated with <a href="https://github.com/goldst/bemdoc-generator">bemdoc-generator</a> v${package.version}, the dynamic documentation generator for BEM-based stylesheets by <a href="https://gldstn.dev">Leonard Goldstein</a></p>
+            <p>Generated with <a href="${pkg.homepage}">${pkg.name}</a> v${pkg.version}, the generator for interactive documentation for block-based stylesheets by <a href="https://gldstn.dev">Leonard Goldstein</a></p>
         </footer>
     </body>
     </html>`.replace(/(^\s*)|\n/gm, '');
-}
-
-function variablesToHTML(variables) {
-    return (variables.map((v, i) => `
-                <p>${v.description}. Type: <code>${v.type}</code></p><div class="variables__row"><code id="variables_name--${i}">${v.name}</code><input type="text" class="variables__input" id="variables__input--${i}" onkeyup="loadMarkups()" placeholder="${v.default}"><input type="button" value="R" onclick="document.getElementById('variables__input--${i}').value=''; loadMarkups()"></div>
-            `.trim())
-        .join(''))
 }
 
 async function* importFiles(file) {
@@ -634,15 +773,19 @@ async function* importFiles(file) {
     }
 }
 
-async function fileToTreesAndRelevantObjects(file) {
+async function fileToTreesAndRelevantObjects(file, fileNames = [], imported = false) {
     const objects = {
-        trees: [],
-        variables: [],
-        dependencies: []
+        trees: new TreeArray(),
+        variables: new VariableArray(),
+        dependencies: new DependencyArray()
     };
 
     for(const comment of getComments(file.content)) {
-        const currObjects = getTreesAndRelevantObjects(comment);
+        const currObjects = getTreesAndRelevantObjects(
+            comment,
+            file.path + '/' + file.name,
+            fileNames,
+            imported);
         objects.trees.push(...currObjects.trees);
         objects.variables.push(...currObjects.variables);
         objects.dependencies.push(...currObjects.dependencies);
@@ -651,7 +794,7 @@ async function fileToTreesAndRelevantObjects(file) {
     objects.trees = generateCombinationTrees(objects.trees);
 
     for await(const importFile of importFiles(file)) {
-        const {trees, variables, dependencies} = await fileToTreesAndRelevantObjects(importFile);
+        const {trees, variables, dependencies} = await fileToTreesAndRelevantObjects(importFile, fileNames, true);
         objects.trees.push(...trees);
         objects.variables.push(...variables);
         objects.dependencies.push(...dependencies);
@@ -660,21 +803,25 @@ async function fileToTreesAndRelevantObjects(file) {
     return objects;
 }
 
-async function fileToPage(file) {
-    const {trees, variables, dependencies} = await fileToTreesAndRelevantObjects(file);
+async function fileToPage(file, fileNames = []) {
+    const {trees, variables, dependencies} = await fileToTreesAndRelevantObjects(file, fileNames);
     
-    const filters = Array.from(new Set(getFiltersFromTrees(trees)));
+    const filters = Array.from(new Set(trees.getFiltersDeep()));
     const filterStructure = structureFilters(filters);
-    const filterMarkup = filterCheckboxesFromStructuredFilters(filterStructure);
-    const variableMarkup = variablesToHTML(variables);
+    const filterMarkup = filterStructure.htmlCheckboxes;
     const blockMarkups = treesToHTMLArray(trees, file.name);
 
-    return buildPage(file.name, filterMarkup, variableMarkup, Array.from(blockMarkups));
+    return buildPage(file.name, filterMarkup, variables.html, Array.from(blockMarkups));
 }
 
 (async () => {
-    for await (const file of getFiles()) {
-        const page = await fileToPage(file);
+    const files = [];
+    for await(const file of getFiles()) {
+        files.push(file);
+    }
+    const fileNames = files.map(file => file.name);
+    for (const file of files) {
+        const page = await fileToPage(file, fileNames);
         await fs.promises.writeFile(
             path.resolve(file.path, file.name + '.bemdoc.html'),
             page);

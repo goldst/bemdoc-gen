@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "bemdoc-gen": "./index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goldst/bemdoc-gen.git"
@@ -20,5 +23,5 @@
   "bugs": {
     "url": "https://github.com/goldst/bemdoc-gen/issues"
   },
-  "homepage": "https://github.com/goldst/bemdoc-gen#readme"
+  "homepage": "https://github.com/goldst/bemdoc-gen"
 }
