@@ -420,7 +420,7 @@ function getOrTreeAndRelevantObjects(comment, fileName, fileNames = [], imported
                 if(fileNames.includes(extending)) {
                     // file will be handled at a different point in time
                     return {
-                        tree: new TreeNode(),
+                        tree: new Tree(new TreeNode(), '', new DependencyArray()),
                         variables: new VariableArray(),
                         dependencies: new DependencyArray()
                     };
@@ -475,7 +475,7 @@ function getOrTreeAndRelevantObjects(comment, fileName, fileNames = [], imported
 }
 
 function getTreesAndRelevantObjects(comment, fileName, fileNames = [], imported = false) {
-    const objects = getOrTreeAndRelevantObjects(comment, fileName, fileNames, imported = false);
+    const objects = getOrTreeAndRelevantObjects(comment, fileName, fileNames, imported);
     return {
         trees: Array.from(getTreesFromOrTree(objects.tree)),
         variables: objects.variables,
