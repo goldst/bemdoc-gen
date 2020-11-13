@@ -41,7 +41,7 @@ and whenever you need it, just run
 > bemdoc-gen <folder>
 ```
 
-If you need example data, clone [goldst.github.io](https://github.com/goldst/goldst.github.io) and run `bemdoc-gen` on the `blocks` folder.
+If you need example data, clone [goldst/goldst.github.io](https://github.com/goldst/goldst.github.io) and run `bemdoc-gen` on the `blocks` folder.
 
 ## :octocat: Contributing
 `bemdoc-gen` is far from being done. Even though the state of code and ideas is a bit messy right now, you are invited to participate! For more information how you can help, have a look at [the contribution page](/CONTRIBUTING.md) and the [code of conduct](/CODE_OF_CONDUCT.md).
