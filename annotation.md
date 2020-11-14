@@ -21,11 +21,11 @@ Describes what the block HTML could look like. Instead of writing the html tags,
 - `<tags>` is a list of HTML tag names, joined with ` | ` between the tag names.
 
 ## `@extends <fileLocation>`
-Tells bemdoc-gen to not generate a documentation file if it is already generating one for the file it points at. All annotation will be interpreted as if it was in the other file.
+Tells `bemdoc-gen` to not generate a documentation file if it is already generating one for the file it points at. All annotation will be interpreted as if it was in the other file.
 - `<fileLocation>`: relative path to the main file
 
 ## `@requires <fileLocation>`
-Tells bemdoc-gen that this block, for correct representation, needs another file. The file can be either a `.js` or `.css` file. This tag wont change the annotations of the selected file.
+Tells `bemdoc-gen` that this block, for correct representation, needs another file. The file can be either a `.js` or `.css` file. This tag wont change the annotations of the selected file.
 - `<fileLocation>`: relative path to the required file
 
 ## `@todo <description>`

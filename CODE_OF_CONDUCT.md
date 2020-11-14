@@ -61,7 +61,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-leonard-goldstein@outlook.de.
+𝕝𝕖𝕠𝕟𝕒𝕣𝕕-𝕘𝕠𝕝𝕕𝕤𝕥𝕖𝕚𝕟@𝕠𝕦𝕥𝕝𝕠𝕠𝕜.𝕕𝕖.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

@@ -3,7 +3,7 @@
 
 `bemdoc-gen` is a lightweight tool for generating visual and interactive documentation pages for CSS components.
 
-When creating a web project with many CSS files, it is easy to lose track on content and interdependencies. Often, these CSS files are organized within different folders, called components or blocks. `bemdoc-gen` parses the CSS files and adds a HTML documentation file to each block.
+When creating a web project with many CSS files, it is easy to lose track of content and interdependencies. Often, these CSS files are organized within a bunch of folders, called components or blocks. `bemdoc-gen` parses the CSS files and adds an HTML documentation file to each block.
 
 Originally, this project was made with the [BEM methodology](http://getbem.com/) in mind, but it works really well without it too.
 
@@ -46,7 +46,7 @@ and whenever you need it, just run
 If you need example data, clone [goldst/goldst.github.io](https://github.com/goldst/goldst.github.io) and run `bemdoc-gen` on the `blocks` folder.
 
 ## :octocat: Contributing
-`bemdoc-gen` is far from being done. Even though the state of code and ideas is a bit messy right now, you are invited to participate! For more information how you can help, have a look at [the contribution page](/CONTRIBUTING.md) and the [code of conduct](/CODE_OF_CONDUCT.md).
+`bemdoc-gen` is far from being done. Even though the state of code and ideas is a bit messy right now, you are invited to participate! For more information on how you can help, have a look at [the contribution page](/CONTRIBUTING.md) and the [code of conduct](/CODE_OF_CONDUCT.md).
 
 If you use `bemdoc-gen` in your own project, I'd love to hear from you! You can drop me an e-mail at 𝕝𝕖𝕠𝕟𝕒𝕣𝕕-𝕘𝕠𝕝𝕕𝕤𝕥𝕖𝕚𝕟@𝕠𝕦𝕥𝕝𝕠𝕠𝕜.𝕕𝕖 (if you can read it, you are probably not a :robot:) or even better, just file an issue.
 
