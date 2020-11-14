@@ -7,7 +7,9 @@ When creating a web project with many CSS files, it is easy to lose track on con
 
 Originally, this project was made with the [BEM methodology](http://getbem.com/) in mind, but it works really well without it too.
 
-**Attention**: This project is work-in-progress – some features won't work yet.
+**:warning: Attention**: This project is work-in-progress – some features won't work yet.
+
+![(bemdoc-gen result example visualization)](./example-visualization.png)
 
 ## :pen: Annotating your CSS files
 `bemdoc-gen` requires some simple annotation at any place in your CSS files to work, for example:
