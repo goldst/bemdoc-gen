@@ -1,6 +1,6 @@
 {
   "name": "bemdoc-gen",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "generates interactive documentation for block-based CSS libraries",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "bin": {
     "bemdoc-gen": "./index.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goldst/bemdoc-gen.git"

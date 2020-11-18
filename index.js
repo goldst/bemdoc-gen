@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 "use strict";
-
-const fs = require('fs');
-const path = require('path');
-const pkg = require('./package.json');
+let fs, path, pkg;
 
 class Tree {
     constructor(root, description, dependencies = new DependencyArray()) {
@@ -516,7 +513,7 @@ function structureFilters(filters) {
     );
 }
 
-function* treesToHTMLArray(trees, fileName) {
+function* treesToHTMLArray(trees, file) {
     for(const tree in trees) {
         const filters = 
             Array.from(trees[tree].root.getFiltersDeep())
@@ -548,7 +545,12 @@ function* treesToHTMLArray(trees, fileName) {
                 if(iframe && iframe.contentWindow) {
                     iframe.contentWindow.document.open();
                     iframe.contentWindow.document.write(
-                        '<head><link rel="stylesheet" type="text/css" href="${fileName}">' +
+                        '<head>' +
+                        '${
+                            typeof window === 'undefined' ?
+                            `<link rel="stylesheet" type="text/css" href="${file.name}">` : //node
+                            `<style>${file.content}</style>` // browser
+                        }' +
                         dependencies +
                         '</head>' +
                         '<style> :root{' +
@@ -809,21 +811,34 @@ async function fileToPage(file, fileNames = []) {
     const filters = Array.from(new Set(trees.getFiltersDeep()));
     const filterStructure = structureFilters(filters);
     const filterMarkup = filterStructure.htmlCheckboxes;
-    const blockMarkups = treesToHTMLArray(trees, file.name);
+    const blockMarkups = treesToHTMLArray(trees, file);
 
     return buildPage(file.name, filterMarkup, variables.html, Array.from(blockMarkups));
 }
 
-(async () => {
-    const files = [];
-    for await(const file of getFiles()) {
-        files.push(file);
-    }
-    const fileNames = files.map(file => file.name);
-    for (const file of files) {
-        const page = await fileToPage(file, fileNames);
-        await fs.promises.writeFile(
-            path.resolve(file.path, file.name + '.bemdoc.html'),
-            page);
-    }
-})();
+if(typeof window === 'undefined') { //running in node
+    (async () => {
+        fs = await import('fs');
+        path = await import('path');
+        pkg = JSON.parse(await fs.promises.readFile('./package.json'));
+
+        const files = [];
+        for await(const file of getFiles()) {
+            files.push(file);
+        }
+        const fileNames = files.map(file => file.name);
+        for (const file of files) {
+            const page = await fileToPage(file, fileNames);
+            await fs.promises.writeFile(
+                path.resolve(file.path, file.name + '.bemdoc.html'),
+                page);
+        }
+    })();
+}
+
+export default async function getFileContentBrowser(name, content) {
+    pkg = await (await fetch('./package.json')).json();
+    return await fileToPage({
+        path: '', name, content
+    })
+};

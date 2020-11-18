@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bemdoc Online Generator</title>
+    <script type="module">
+        import bemdocGen from './index.js';
+
+        async function onButtonClick() {
+            const iframe = document.getElementById('bemdoc-output').contentWindow.document;
+            iframe.open();
+            iframe.write(await bemdocGen('input file', document.getElementById('css-input').value));
+            iframe.close();
+        }
+
+        document.getElementById('button').addEventListener('click', onButtonClick);
+    </script>
+</head>
+<body>
+    <h1>bemdoc Online Generator</h1>
+    <p>CSS with <a href="https://github.com/goldst/bemdoc-gen/blob/master/annotation.md">bemdoc Annotation</a>:</p>
+    <textarea name="css-input" id="css-input" cols="30" rows="10">/**
+ * This is an example button block.
+ * @tree
+ *   .button : div
+ *     .button-inner : button
+ *        [ content ]
+ * @variable {color} [--button--color=black] foreground/text color
+ */
+.button-inner {
+  color: var(--button--color, black);
+  background-color: green;
+  border: none;
+}</textarea>
+    <button id="button">generate</button>
+
+    <p>Generated Document:</p>
+    <iframe id="bemdoc-output" frameborder="0">
+    </iframe>
+
+    <p>Generated Document > right click > Save Page As... to save bemdoc.</p>
+    <ul id="disclaimers">
+        <li><code>bemdoc-gen</code> by <a href="/">Leonard Goldstein</a></li>
+        <li><a href="https://github.com/goldst/bemdoc-gen">Fork this on GitHub</a></li>
+        <li><a href="https://www.npmjs.com/package/bemdoc-gen">Install this from npm</a></li>
+        <li><a href="impressum.html">Impressum</a></li>
+    </ul>
+
+    <style>
+        @font-face {
+            font-family: 'Manrope';
+            font-weight: 300;
+            src: url(fonts/Manrope-Regular.ttf);
+        }
+
+        @font-face {
+            font-family: 'Manrope';
+            font-weight: 400;
+            src: url(fonts/Manrope-SemiBold.ttf);
+        }
+
+        * {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 300;
+        }
+
+        h1 {
+            font-weight: 400;
+        }
+
+        body {
+            margin: 0;
+            background-color: rgb(255, 255, 255);
+            max-width: 800px;
+            width: 100vw;
+            position: absolute;
+            left: 50vw;
+            transform: translateX(-50%);
+        }
+        #css-input {
+            width: calc(100% - 100px);
+            padding: 0;
+            display: inline-block;
+            border: 2px solid gray;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        #button {
+            width: 90px;
+            height: 90px;
+            background-color: gray;
+            border: none;
+            margin: 0;
+            padding: 0;
+            vertical-align: top;
+            border-radius: 8px;
+        }
+        #bemdoc-output {
+            width: 100%;
+            height: 50vh;
+            border: 2px solid gray;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        #disclaimers {
+            width: 100%;
+            text-align: center;
+            padding: 0;
+        }
+        li {
+            display: inline-block;
+        }
+        ul li:not(:last-child)::after {
+            content: " | ";
+        }
+        ul a {
+            text-decoration: none;
+        }
+            
+        a {
+            color: black;
+        }
+    </style>
+</body>
+</html>
