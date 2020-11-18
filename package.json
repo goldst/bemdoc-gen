@@ -1,6 +1,6 @@
 {
   "name": "bemdoc-gen",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "generates interactive documentation for block-based CSS libraries",
   "main": "index.js",
   "scripts": {
