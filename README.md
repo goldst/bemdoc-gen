@@ -7,6 +7,8 @@ When creating a web project with many CSS files, it is easy to lose track of con
 
 Originally, this project was made with the [BEM methodology](http://getbem.com/) in mind, but it works really well without it too.
 
+Try the [Online Demo](https://www.gldstn.dev/bemdoc-gen/)!
+
 **:warning: Attention**: This project is work-in-progress – some features won't work yet.
 
 ![(bemdoc-gen result example visualization)](./example-visualization.png)
