@@ -1,4 +1,5 @@
 index.html
 CODE_OF_CONDUCT.md
 CONTRIBUTONG.md
-
+.vscode/*
+.github/*
